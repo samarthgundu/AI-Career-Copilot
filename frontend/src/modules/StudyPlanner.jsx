@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, ChevronDown, Calendar, CheckSquare, ExternalLink, Sparkles, RefreshCw } from 'lucide-react'
+import { BookOpen, ChevronDown, CheckSquare, ExternalLink, RefreshCw } from 'lucide-react'
 import { useAppContext } from '../context/AppContext'
 import { analyzeResume, getSkillGap, getStudyPlan } from '../services/api'
 
@@ -36,28 +36,28 @@ const StudyPlanner = () => {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8 select-none">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 md:space-y-8 select-none pb-24 md:pb-8">
       
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 md:pb-6 border-b border-white/5">
         <div>
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] md:text-xs font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">
               Module 04
             </span>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Personalized Learning Roadmap</h1>
+            <h1 className="text-xl md:text-3xl font-extrabold text-white tracking-tight">Personalized Learning Roadmap</h1>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-xs md:text-sm text-slate-400">
             A week-by-week structured curriculum customized to bridge your specific skill gaps.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full sm:w-auto">
           <select
             value={weeks}
             onChange={(e) => setWeeks(parseInt(e.target.value))}
             disabled={loading || !!studyPlan}
-            className="px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+            className="flex-1 sm:flex-none px-3.5 py-3 bg-slate-900 border border-slate-700/80 rounded-2xl text-xs font-bold text-white focus:outline-none focus:border-purple-500 transition-all cursor-pointer"
           >
             <option value={2}>2 Weeks Accelerated</option>
             <option value={4}>4 Weeks Standard</option>
@@ -68,7 +68,7 @@ const StudyPlanner = () => {
           <motion.button
             onClick={handleCreateStudyPlan}
             disabled={loading || !!studyPlan}
-            className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+            className="w-full sm:w-auto px-5 py-3.5 gradient-btn-primary text-white font-bold text-xs rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -83,43 +83,43 @@ const StudyPlanner = () => {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-5"
           >
             
             {/* Week Accordion Cards */}
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {studyPlan.weeks?.map((week, idx) => {
                 const isExpanded = expandedWeek === idx
 
                 return (
                   <div
                     key={idx}
-                    className="glass-panel glass-panel-hover rounded-2xl overflow-hidden border border-slate-800 transition-all"
+                    className="glass-card glass-card-hover rounded-3xl overflow-hidden border border-white/5 transition-all"
                   >
                     <button
                       onClick={() => setExpandedWeek(isExpanded ? -1 : idx)}
-                      className="w-full p-5 md:p-6 flex items-center justify-between gap-4 text-left hover:bg-slate-800/30 transition-colors"
+                      className="w-full p-4 md:p-6 flex items-center justify-between gap-3 text-left hover:bg-white/5 transition-colors"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-sm font-mono ${
+                      <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-bold text-xs md:text-sm font-mono flex-shrink-0 ${
                           isExpanded 
-                            ? 'bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-lg shadow-indigo-500/20' 
-                            : 'bg-slate-800 text-indigo-400 border border-slate-700'
+                            ? 'bg-gradient-to-tr from-purple-600 to-cyan-500 text-white shadow-lg' 
+                            : 'bg-slate-800/90 text-purple-400 border border-slate-700'
                         }`}>
                           W{idx + 1}
                         </div>
-                        <div>
-                          <h3 className="font-bold text-base text-white">{week.title || `Week ${idx + 1} Focus`}</h3>
-                          <p className="text-xs text-slate-400 mt-0.5">{week.focus || 'Key technical topics & hands-on exercises'}</p>
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-sm md:text-base text-white truncate">{week.title || `Week ${idx + 1} Focus`}</h3>
+                          <p className="text-[11px] md:text-xs text-slate-400 truncate mt-0.5">{week.focus || 'Key technical topics & hands-on exercises'}</p>
                         </div>
                       </div>
 
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
-                        className="p-2 rounded-lg bg-slate-800/80 text-slate-400"
+                        className="p-2 rounded-xl bg-slate-800/80 text-slate-400 flex-shrink-0"
                       >
-                        <ChevronDown size={18} />
+                        <ChevronDown size={16} />
                       </motion.div>
                     </button>
 
@@ -131,20 +131,20 @@ const StudyPlanner = () => {
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.25, ease: 'easeInOut' }}
-                          className="border-t border-slate-800 bg-slate-950/60 p-6 md:p-8 space-y-6"
+                          className="border-t border-white/5 bg-slate-950/70 p-5 md:p-8 space-y-5"
                         >
                           
                           {/* Topics to Study */}
                           <div>
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3 flex items-center gap-2">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-purple-400 mb-2.5 flex items-center gap-2">
                               <BookOpen size={14} />
                               Core Study Topics
                             </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {week.topics?.map((topic, i) => (
                                 <div
                                   key={i}
-                                  className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-200"
+                                  className="p-3 rounded-xl bg-slate-900/80 border border-white/5 text-xs font-medium text-slate-200"
                                 >
                                   {topic}
                                 </div>
@@ -154,17 +154,17 @@ const StudyPlanner = () => {
 
                           {/* Action Items */}
                           <div>
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3 flex items-center gap-2">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2.5 flex items-center gap-2">
                               <CheckSquare size={14} />
-                              Practical Deliverables & Exercises
+                              Practical Exercises & Projects
                             </h4>
                             <div className="space-y-2">
                               {week.actions?.map((action, i) => (
                                 <div
                                   key={i}
-                                  className="flex items-start gap-3 text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80"
+                                  className="flex items-start gap-2.5 text-xs text-slate-300 bg-slate-900/50 p-3 rounded-xl border border-white/5"
                                 >
-                                  <span className="w-5 h-5 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
+                                  <span className="w-4 h-4 rounded bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
                                     ✓
                                   </span>
                                   <span className="leading-relaxed">{action}</span>
@@ -176,11 +176,11 @@ const StudyPlanner = () => {
                           {/* Recommended Resources */}
                           {week.resources?.length > 0 && (
                             <div>
-                              <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-3 flex items-center gap-2">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2.5 flex items-center gap-2">
                                 <ExternalLink size={14} />
-                                Learning Resources & Documentation
+                                Learning Resources & Specs
                               </h4>
-                              <ul className="space-y-2">
+                              <ul className="space-y-1.5">
                                 {week.resources.map((res, i) => (
                                   <li key={i} className="text-xs text-slate-400 flex items-center gap-2 hover:text-cyan-300 transition-colors">
                                     <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
@@ -200,31 +200,31 @@ const StudyPlanner = () => {
             </div>
 
             {/* Summary Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-              <div className="glass-panel rounded-2xl p-6 text-center space-y-1">
-                <span className="text-3xl font-extrabold text-white font-mono">{studyPlan.weeks?.length || weeks}</span>
-                <p className="text-xs font-semibold text-slate-400">Total Program Weeks</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="glass-card rounded-3xl p-5 text-center space-y-1">
+                <span className="text-2xl md:text-3xl font-extrabold text-white font-mono">{studyPlan.weeks?.length || weeks}</span>
+                <p className="text-xs font-bold text-slate-400">Total Program Weeks</p>
               </div>
 
-              <div className="glass-panel rounded-2xl p-6 text-center space-y-1">
-                <span className="text-3xl font-extrabold text-emerald-400 font-mono">
+              <div className="glass-card rounded-3xl p-5 text-center space-y-1">
+                <span className="text-2xl md:text-3xl font-extrabold text-emerald-400 font-mono">
                   {studyPlan.weeks?.reduce((acc, w) => acc + (w.topics?.length || 0), 0) || 0}
                 </span>
-                <p className="text-xs font-semibold text-slate-400">Modules & Topics Covered</p>
+                <p className="text-xs font-bold text-slate-400">Topics & Modules</p>
               </div>
 
-              <div className="glass-panel rounded-2xl p-6 text-center space-y-1">
-                <span className="text-3xl font-extrabold text-cyan-400 font-mono">
+              <div className="glass-card rounded-3xl p-5 text-center space-y-1">
+                <span className="text-2xl md:text-3xl font-extrabold text-cyan-400 font-mono">
                   {studyPlan.weeks?.reduce((acc, w) => acc + (w.actions?.length || 0), 0) || 0}
                 </span>
-                <p className="text-xs font-semibold text-slate-400">Action Items Completed</p>
+                <p className="text-xs font-bold text-slate-400">Action Items Completed</p>
               </div>
             </div>
 
             {/* Reset / Regenerate */}
             <button
               onClick={() => setStudyPlan(null)}
-              className="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
+              className="w-full py-3.5 px-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
             >
               <RefreshCw size={14} />
               <span>Configure Different Duration</span>
@@ -234,11 +234,11 @@ const StudyPlanner = () => {
         </AnimatePresence>
       ) : (
         /* Empty State */
-        <div className="glass-panel rounded-3xl p-12 text-center space-y-4 max-w-xl mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
+        <div className="glass-card rounded-3xl p-8 md:p-12 text-center space-y-4 max-w-xl mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto shadow-inner">
             <BookOpen size={32} />
           </div>
-          <h3 className="text-lg font-bold text-white">Study Roadmap Generator</h3>
+          <h3 className="text-base md:text-lg font-bold text-white">Study Roadmap Generator</h3>
           <p className="text-xs text-slate-400 leading-relaxed">
             Select your target timeframe above and click <strong>"Generate Plan"</strong> to construct a weekly upskilling schedule customized to your career gap analysis.
           </p>
