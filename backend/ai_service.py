@@ -12,7 +12,7 @@ def call_gemini(prompt: str) -> str:
     from google import genai
     client = genai.Client(api_key=key)
     
-    models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-flash"]
+    models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
     last_err = None
     
     for model_name in models:
