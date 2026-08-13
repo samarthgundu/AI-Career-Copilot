@@ -5,28 +5,44 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = (
-    os.getenv("SUPABASE_SECRET_KEY")
-    or os.getenv("SUPABASE_SERVICE_KEY")
-    or os.getenv("SUPABASE_PUBLISHABLE_KEY")
-    or ""
-)
 
-# Try to connect to Supabase, but provide fallback for demo mode
-try:
-    from supabase import create_client, Client
-    print(f"[Supabase] Attempting connection to: {SUPABASE_URL}")
-    print(f"[Supabase] Key preview: {SUPABASE_KEY[:20]}..." if SUPABASE_KEY else "[Supabase] Key: None")
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print(f"[Supabase] Connected successfully!")
-    HAS_SUPABASE = True
-except Exception as e:
-    print(f"[Supabase] Connection failed: {type(e).__name__}: {e}")
-    import traceback
-    traceback.print_exc()
-    print(f"[Supabase] Running in demo/fallback mode.")
-    supabase = None
-    HAS_SUPABASE = False
+# Try to connect to Supabase with key candidates
+HAS_SUPABASE = False
+supabase = None
+
+if SUPABASE_URL:
+    try:
+        from supabase import create_client, Client
+        print(f"[Supabase] Attempting connection to: {SUPABASE_URL}")
+
+        key_candidates = [
+            os.getenv("SUPABASE_KEY"),
+            os.getenv("SUPABASE_PUBLISHABLE_KEY"),
+            os.getenv("SUPABASE_ANON_KEY"),
+            os.getenv("SUPABASE_SECRET_KEY"),
+            os.getenv("SUPABASE_SERVICE_KEY"),
+        ]
+        key_candidates = [k for k in key_candidates if k and not k.startswith("your_")]
+
+        for key in key_candidates:
+            try:
+                print(f"[Supabase] Testing key candidate: {key[:20]}...")
+                client: Client = create_client(SUPABASE_URL, key)
+                if client:
+                    supabase = client
+                    HAS_SUPABASE = True
+                    print(f"[Supabase] Connected successfully!")
+                    break
+            except Exception as key_err:
+                print(f"[Supabase] Key attempt failed ({key_err}), testing next candidate...")
+
+    except Exception as e:
+        print(f"[Supabase] Connection error: {e}")
+        supabase = None
+        HAS_SUPABASE = False
+
+if not HAS_SUPABASE:
+    print("[Supabase] Running in demo/fallback mode.")
 
 class Database:
     @staticmethod
