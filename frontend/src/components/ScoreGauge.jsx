@@ -10,27 +10,23 @@ const ScoreGauge = ({ score, max = 100, label = 'Match Score' }) => {
 
   const getTheme = () => {
     if (percentage >= 75) return {
-      stroke: '#10B981',
-      glow: 'rgba(16, 185, 129, 0.35)',
-      badgeBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/40',
+      stroke: '#34D399',
+      badgeBg: 'glass-vision-pill text-emerald-200 border-emerald-400/40',
       text: '🎯 Excellent Match'
     }
     if (percentage >= 55) return {
-      stroke: '#6366F1',
-      glow: 'rgba(99, 102, 241, 0.35)',
-      badgeBg: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/40',
+      stroke: '#38BDF8',
+      badgeBg: 'glass-vision-pill text-sky-200 border-sky-400/40',
       text: '✓ Strong Alignment'
     }
     if (percentage >= 35) return {
-      stroke: '#F59E0B',
-      glow: 'rgba(245, 158, 11, 0.35)',
-      badgeBg: 'bg-amber-500/10 text-amber-300 border-amber-500/40',
+      stroke: '#FBBF24',
+      badgeBg: 'glass-vision-pill text-amber-200 border-amber-400/40',
       text: '⚡ Moderate Gaps'
     }
     return {
-      stroke: '#EF4444',
-      glow: 'rgba(239, 68, 68, 0.35)',
-      badgeBg: 'bg-rose-500/10 text-rose-300 border-rose-500/40',
+      stroke: '#F87171',
+      badgeBg: 'glass-vision-pill text-rose-200 border-rose-400/40',
       text: '⚠️ Optimization Needed'
     }
   }
@@ -42,7 +38,7 @@ const ScoreGauge = ({ score, max = 100, label = 'Match Score' }) => {
       <div className="relative w-40 h-40 md:w-44 md:h-44 flex items-center justify-center">
         {/* Ambient Glow Orb */}
         <div 
-          className="absolute inset-0 rounded-full blur-2xl opacity-30 transition-all duration-1000"
+          className="absolute inset-0 rounded-full blur-2xl opacity-25 transition-all duration-1000"
           style={{ backgroundColor: theme.stroke }}
         />
 
@@ -53,7 +49,7 @@ const ScoreGauge = ({ score, max = 100, label = 'Match Score' }) => {
             cx="80"
             cy="80"
             r={radius}
-            className="stroke-slate-800/60"
+            className="stroke-white/20"
             strokeWidth="9"
             fill="transparent"
           />
@@ -76,14 +72,14 @@ const ScoreGauge = ({ score, max = 100, label = 'Match Score' }) => {
         {/* Center Score Counter */}
         <div className="absolute flex flex-col items-center justify-center text-center">
           <motion.span 
-            className="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-mono"
+            className="text-3xl md:text-4xl font-bold tracking-tight text-white font-mono"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             {percentage}%
           </motion.span>
-          <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+          <span className="text-[10px] md:text-[11px] font-bold text-white/70 uppercase tracking-widest mt-0.5">
             {label}
           </span>
         </div>
@@ -94,7 +90,7 @@ const ScoreGauge = ({ score, max = 100, label = 'Match Score' }) => {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className={`mt-2.5 px-3.5 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md ${theme.badgeBg}`}
+        className={`mt-2.5 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg ${theme.badgeBg}`}
       >
         {theme.text}
       </motion.div>

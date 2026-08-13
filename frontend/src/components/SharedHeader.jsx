@@ -70,15 +70,15 @@ const SharedHeader = () => {
 
   return (
     <>
-      <header className="glass-header px-4 md:px-8 py-3.5 sticky top-0 z-30 select-none">
+      <header className="glass-vision-header px-4 md:px-8 py-3.5 sticky top-0 z-30 select-none">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           
-          {/* Brand Logo visible on Mobile */}
+          {/* Brand Logo on Mobile */}
           <div className="flex md:hidden items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center shadow-md">
-              <Sparkles size={16} className="text-white" />
+            <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white shadow-md">
+              <Sparkles size={16} />
             </div>
-            <span className="font-extrabold text-sm text-white tracking-tight">AI Career Copilot</span>
+            <span className="font-bold text-sm text-white tracking-tight">AI Career Copilot</span>
           </div>
 
           {/* Context Control Pills */}
@@ -96,21 +96,21 @@ const SharedHeader = () => {
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all border ${
                   resume 
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/20'
-                    : 'bg-slate-900/60 text-slate-300 border-slate-700/80 hover:border-purple-500/50 hover:bg-slate-800'
+                    ? 'bg-emerald-500/30 text-emerald-100 border-emerald-400/50 hover:bg-emerald-500/40'
+                    : 'glass-vision-pill text-white hover:bg-white/30'
                 }`}
               >
                 {resume ? (
                   <>
-                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
+                    <CheckCircle2 size={15} className="text-emerald-300 flex-shrink-0" />
                     <span className="truncate max-w-[120px] md:max-w-[160px]">Resume Parsed</span>
-                    <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-500/20 text-[10px] text-emerald-300 font-mono">Ready</span>
+                    <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-400/30 text-[10px] text-white font-mono">Ready</span>
                   </>
                 ) : (
                   <>
-                    <Upload size={15} className="text-purple-400 flex-shrink-0" />
+                    <Upload size={15} className="text-white/80 flex-shrink-0" />
                     <span className="truncate">Upload Resume</span>
                   </>
                 )}
@@ -120,17 +120,17 @@ const SharedHeader = () => {
             {/* Target Job Pill */}
             <button
               onClick={() => setShowTargetModal(true)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all border ${
                 jobTarget.title 
-                  ? 'bg-purple-500/10 text-purple-300 border-purple-500/40 hover:bg-purple-500/20'
-                  : 'bg-slate-900/60 text-slate-300 border-slate-700/80 hover:border-purple-500/50 hover:bg-slate-800'
+                  ? 'bg-white/25 text-white border-white/40 hover:bg-white/35'
+                  : 'glass-vision-pill text-white hover:bg-white/30'
               }`}
             >
-              <Target size={15} className={jobTarget.title ? 'text-purple-400 flex-shrink-0' : 'text-slate-400 flex-shrink-0'} />
+              <Target size={15} className="text-white/90 flex-shrink-0" />
               {jobTarget.title ? (
                 <div className="flex items-center gap-1 truncate max-w-[140px] md:max-w-[220px]">
                   <span className="font-bold text-white truncate">{jobTarget.title}</span>
-                  <span className="hidden sm:inline text-slate-400">@ {jobTarget.company}</span>
+                  <span className="hidden sm:inline text-white/70">@ {jobTarget.company}</span>
                 </div>
               ) : (
                 <span>Set Target Job</span>
@@ -139,14 +139,14 @@ const SharedHeader = () => {
             </button>
           </div>
 
-          {/* Load Demo Quick Action Button */}
+          {/* Quick Action Button */}
           <motion.button
             onClick={loadDemoData}
-            className="px-3.5 py-2 gradient-btn-primary text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition-all ml-auto md:ml-0"
+            className="px-3.5 py-2 btn-vision-primary text-white font-bold text-xs rounded-2xl shadow-lg flex items-center gap-1.5 transition-all ml-auto md:ml-0"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
-            <Zap size={14} className="fill-current text-cyan-200" />
+            <Zap size={14} className="fill-current text-white/90" />
             <span className="hidden sm:inline">Load Demo Profile</span>
             <span className="sm:hidden">Demo</span>
           </motion.button>
@@ -156,26 +156,26 @@ const SharedHeader = () => {
       {/* Target Job Settings Modal */}
       <AnimatePresence>
         {showTargetModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-lg">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="w-full max-w-lg glass-card bg-[#0B0F19]/95 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl space-y-5"
+              className="w-full max-w-lg glass-vision border border-white/30 rounded-3xl p-6 md:p-8 shadow-2xl space-y-5"
             >
-              <div className="flex items-center justify-between pb-4 border-b border-white/5">
+              <div className="flex items-center justify-between pb-4 border-b border-white/20">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <div className="p-2.5 rounded-2xl bg-white/20 border border-white/30 text-white">
                     <Target size={22} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">Target Role Configuration</h3>
-                    <p className="text-xs text-slate-400">Gemini AI will analyze your resume against this job</p>
+                    <p className="text-xs text-white/70">Gemini AI will analyze your resume against this job</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowTargetModal(false)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors"
                 >
                   <X size={18} />
                 </button>
@@ -183,37 +183,37 @@ const SharedHeader = () => {
 
               <form onSubmit={handleJobTargetSave} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Target Job Title *</label>
+                  <label className="block text-xs font-bold text-white mb-1.5">Target Job Title *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Senior Full Stack Engineer"
                     value={jobTarget.title}
                     onChange={(e) => setJobTarget({ ...jobTarget, title: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-black/30 border border-white/25 rounded-2xl text-white text-sm placeholder-white/40 focus:outline-none focus:border-white/60 focus:bg-black/40 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Company Name *</label>
+                  <label className="block text-xs font-bold text-white mb-1.5">Company Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Google / Microsoft / Tech Startup"
                     value={jobTarget.company}
                     onChange={(e) => setJobTarget({ ...jobTarget, company: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-black/30 border border-white/25 rounded-2xl text-white text-sm placeholder-white/40 focus:outline-none focus:border-white/60 focus:bg-black/40 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Job Description (Optional)</label>
+                  <label className="block text-xs font-bold text-white mb-1.5">Job Description (Optional)</label>
                   <textarea
                     rows={4}
                     placeholder="Paste job description, required skills, or key responsibilities..."
                     value={jobTarget.description}
                     onChange={(e) => setJobTarget({ ...jobTarget, description: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-white text-sm placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-black/30 border border-white/25 rounded-2xl text-white text-sm placeholder-white/40 focus:outline-none focus:border-white/60 focus:bg-black/40 transition-all resize-none"
                   />
                 </div>
 
@@ -221,14 +221,14 @@ const SharedHeader = () => {
                   <button
                     type="button"
                     onClick={() => setShowTargetModal(false)}
-                    className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all"
+                    className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white text-xs font-bold rounded-xl transition-all border border-white/20"
                   >
                     Cancel
                   </button>
                   <motion.button
                     type="submit"
                     disabled={loading}
-                    className="px-5 py-2.5 gradient-btn-primary text-white text-xs font-bold rounded-xl shadow-lg transition-all disabled:opacity-50"
+                    className="px-5 py-2.5 btn-vision-primary text-white text-xs font-bold rounded-xl shadow-lg transition-all disabled:opacity-50"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >

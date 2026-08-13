@@ -106,27 +106,27 @@ const InterviewAssistant = () => {
   }
 
   return (
-    <div className="h-full flex flex-col md:flex-row overflow-hidden select-none bg-[#060911] pb-16 md:pb-0">
+    <div className="h-full flex flex-col md:flex-row overflow-hidden select-none pb-16 md:pb-0">
       
       {/* Main Chat Workspace */}
-      <div className="flex-1 flex flex-col h-full border-r border-white/5 relative min-w-0">
+      <div className="flex-1 flex flex-col h-full border-r border-white/20 relative min-w-0">
         
         {!sessionId ? (
           /* Pre-Interview Landing State */
           <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-8 text-center max-w-xl mx-auto space-y-6">
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-purple-500/10 text-purple-400 flex items-center justify-center shadow-2xl shadow-purple-500/10">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl glass-vision text-white flex items-center justify-center shadow-2xl border border-white/40">
               <MessageSquare size={36} />
             </div>
             <div>
-              <h2 className="text-xl md:text-3xl font-extrabold text-white tracking-tight">AI Mock Interview Simulator</h2>
-              <p className="text-xs md:text-sm text-slate-400 mt-2 leading-relaxed">
+              <h2 className="text-xl md:text-3xl font-bold text-white tracking-tight">AI Mock Interview Simulator</h2>
+              <p className="text-xs md:text-sm text-white/70 mt-2 leading-relaxed font-medium">
                 Practice technical & behavioral questions evaluated dynamically by Gemini 3.6 Flash based on your resume and target job.
               </p>
             </div>
             <motion.button
               onClick={handleStartInterview}
               disabled={loading}
-              className="w-full sm:w-auto px-8 py-4 gradient-btn-primary text-white font-bold text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-all disabled:opacity-50"
+              className="w-full sm:w-auto px-8 py-4 btn-vision-primary text-white font-bold text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-all disabled:opacity-50"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -138,14 +138,14 @@ const InterviewAssistant = () => {
           /* Active Chat Conversation */
           <>
             {/* Mobile Score Bar Toggle */}
-            <div className="md:hidden glass-header p-3 flex items-center justify-between border-b border-white/5">
+            <div className="md:hidden glass-vision-header p-3 flex items-center justify-between border-b border-white/20">
               <div className="flex items-center gap-2">
-                <Award size={16} className="text-purple-400" />
-                <span className="text-xs font-bold text-white">Live AI Score: <span className="text-purple-300 font-mono">{avgScore}%</span></span>
+                <Award size={16} className="text-white" />
+                <span className="text-xs font-bold text-white">Live AI Score: <span className="text-white font-mono">{avgScore}%</span></span>
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-                className="px-2.5 py-1 rounded-lg bg-slate-800 text-xs font-bold text-slate-300 flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg glass-vision-pill text-xs font-bold text-white flex items-center gap-1 border border-white/30"
               >
                 <span>{mobileDrawerOpen ? 'Hide Feedback' : 'View Feedback'}</span>
                 {mobileDrawerOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
@@ -165,24 +165,24 @@ const InterviewAssistant = () => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       className={`flex items-start gap-2.5 ${isCandidate ? 'flex-row-reverse' : 'flex-row'}`}
                     >
-                      <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-xs shadow-md ${
+                      <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-xs shadow-md border ${
                         isCandidate 
-                          ? 'bg-gradient-to-tr from-cyan-600 to-purple-600' 
-                          : 'bg-slate-800/90 text-purple-400 border border-slate-700'
+                          ? 'bg-white/30 border-white/40' 
+                          : 'bg-black/30 border-white/30'
                       }`}>
                         {isCandidate ? <User size={16} /> : <Bot size={16} />}
                       </div>
 
                       <div className={`max-w-[85%] sm:max-w-xl p-3.5 md:p-5 rounded-2xl space-y-1 ${
                         isCandidate
-                          ? 'bg-indigo-600 text-white rounded-tr-none'
-                          : 'glass-card bg-slate-900/90 text-slate-100 rounded-tl-none border-white/5'
+                          ? 'glass-vision bg-white/30 text-white rounded-tr-none border-white/40 shadow-lg'
+                          : 'glass-vision bg-black/30 text-white/95 rounded-tl-none border-white/20 shadow-md'
                       }`}>
                         <div className="flex items-center justify-between gap-4 text-[10px] opacity-75 font-medium pb-0.5">
                           <span>{isCandidate ? 'You' : 'AI Interviewer'}</span>
                           <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                        <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap font-medium">{msg.message}</p>
                       </div>
                     </motion.div>
                   )
@@ -196,21 +196,21 @@ const InterviewAssistant = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-center gap-2.5"
                 >
-                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-slate-800/90 text-purple-400 flex items-center justify-center">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-black/30 text-white flex items-center justify-center border border-white/30 shadow-sm">
                     <Bot size={16} />
                   </div>
-                  <div className="glass-card bg-slate-900/90 px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-2 text-xs text-slate-400">
+                  <div className="glass-vision bg-black/30 px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-2 text-xs text-white/80 border-white/20">
                     <div className="flex items-center gap-1">
                       {[0, 1, 2].map(i => (
                         <motion.div
                           key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-purple-400"
+                          className="w-1.5 h-1.5 rounded-full bg-white"
                           animate={{ y: [0, -5, 0] }}
                           transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
                         />
                       ))}
                     </div>
-                    <span>Evaluating answer...</span>
+                    <span className="font-medium">Evaluating answer...</span>
                   </div>
                 </motion.div>
               )}
@@ -219,7 +219,7 @@ const InterviewAssistant = () => {
             </div>
 
             {/* Input Bar */}
-            <div className="p-3 md:p-6 glass-header border-t border-white/5">
+            <div className="p-3 md:p-6 glass-vision-header border-t border-white/20">
               <form onSubmit={handleSendMessage} className="flex gap-2.5 items-end max-w-4xl mx-auto">
                 <div className="flex-1 relative">
                   <textarea
@@ -232,10 +232,10 @@ const InterviewAssistant = () => {
                       }
                     }}
                     placeholder="Type your interview answer... (Ctrl+Enter to send)"
-                    className="w-full px-3.5 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-white text-xs md:text-sm placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none transition-all pr-20"
+                    className="w-full px-3.5 py-2.5 bg-black/30 border border-white/30 rounded-2xl text-white text-xs md:text-sm placeholder-white/50 focus:outline-none focus:border-white/60 focus:bg-black/40 resize-none transition-all pr-20 shadow-sm"
                     disabled={isThinking}
                   />
-                  <span className="hidden sm:inline absolute right-3 bottom-3 text-[9px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded pointer-events-none">
+                  <span className="hidden sm:inline absolute right-3 bottom-3 text-[9px] font-mono text-white/60 bg-white/10 px-1.5 py-0.5 rounded pointer-events-none border border-white/20">
                     Ctrl+Enter
                   </span>
                 </div>
@@ -243,7 +243,7 @@ const InterviewAssistant = () => {
                 <motion.button
                   type="submit"
                   disabled={!userInput.trim() || isThinking}
-                  className="px-4 py-3.5 gradient-btn-primary text-white font-bold rounded-2xl shadow-lg flex items-center justify-center transition-all disabled:opacity-40"
+                  className="px-4 py-3.5 btn-vision-primary text-white font-bold rounded-2xl shadow-md flex items-center justify-center transition-all disabled:opacity-40"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -255,52 +255,52 @@ const InterviewAssistant = () => {
         )}
       </div>
 
-      {/* Right Performance Sidebar (Desktop & Mobile Drawer) */}
+      {/* Right Performance Sidebar */}
       {sessionId && (
-        <aside className={`${mobileDrawerOpen ? 'block' : 'hidden md:block'} w-full md:w-80 bg-[#070B14]/90 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/5 p-6 overflow-y-auto flex flex-col justify-between`}>
+        <aside className={`${mobileDrawerOpen ? 'block' : 'hidden md:block'} w-full md:w-80 glass-vision border-t md:border-t-0 md:border-l border-white/20 p-6 overflow-y-auto flex flex-col justify-between`}>
           <div className="space-y-6">
-            <div className="pb-4 border-b border-white/5">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <Award size={16} className="text-purple-400" />
+            <div className="pb-4 border-b border-white/20">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                <Award size={16} className="text-white" />
                 Live Performance Meter
               </h3>
             </div>
 
             {/* Score Gauge */}
-            <div className="glass-card rounded-3xl p-4 flex flex-col items-center justify-center">
+            <div className="glass-vision rounded-3xl p-4 flex flex-col items-center justify-center">
               <ScoreGauge score={avgScore} max={100} label="Response Score" />
             </div>
 
             {/* Feedback Breakdown */}
             {feedback && (
               <div className="space-y-3">
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-                  <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
-                    <CheckCircle size={14} />
+                <div className="p-4 rounded-2xl glass-vision-pill border border-emerald-400/40 space-y-1">
+                  <div className="flex items-center gap-1.5 text-emerald-200 font-bold text-xs">
+                    <CheckCircle size={14} className="text-emerald-300" />
                     <span>Key Strengths</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">{feedback.strengths}</p>
+                  <p className="text-xs text-white/90 leading-relaxed font-medium">{feedback.strengths}</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
-                  <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
-                    <AlertTriangle size={14} />
+                <div className="p-4 rounded-2xl glass-vision-pill border border-amber-400/40 space-y-1">
+                  <div className="flex items-center gap-1.5 text-amber-200 font-bold text-xs">
+                    <AlertTriangle size={14} className="text-amber-300" />
                     <span>Areas for Improvement</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">{feedback.improvement}</p>
+                  <p className="text-xs text-white/90 leading-relaxed font-medium">{feedback.improvement}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="pt-6 border-t border-white/5 mt-4">
+          <div className="pt-6 border-t border-white/20 mt-4">
             <button
               onClick={() => {
                 setSessionId(null)
                 setChatHistory([])
                 setFeedback(null)
               }}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
+              className="w-full py-2.5 px-4 rounded-xl glass-vision-pill hover:bg-white/30 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all border border-white/30"
             >
               <RefreshCw size={14} />
               <span>Reset Interview Session</span>

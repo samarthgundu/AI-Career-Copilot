@@ -28,12 +28,8 @@ function AppContent() {
   }
 
   return (
-    <div className="relative flex h-screen bg-[#060911] text-slate-100 overflow-hidden font-sans select-none">
+    <div className="relative flex h-screen vision-wallpaper text-white overflow-hidden font-sans select-none">
       
-      {/* Background Animated Ambient Glow Orbs */}
-      <div className="bg-glow-orb-1 top-[-100px] left-[-100px] animate-orb-float-1" />
-      <div className="bg-glow-orb-2 bottom-[-100px] right-[-100px] animate-orb-float-2" />
-
       {/* Main Layout Container */}
       <Sidebar activeModule={activeModule} onModuleChange={setActiveModule} />
       
