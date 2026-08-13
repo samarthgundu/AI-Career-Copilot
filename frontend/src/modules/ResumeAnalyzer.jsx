@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAppContext } from '../context/AppContext'
 import { analyzeResume, checkATS, rewriteResume } from '../services/api'
 import ScoreGauge from '../components/ScoreGauge'
 import SkillChip from '../components/SkillChip'
-import { Download, Sparkles } from 'lucide-react'
+import { Download, Sparkles, AlertCircle, FileCheck, CheckCircle, Copy, Check } from 'lucide-react'
 
 const ResumeAnalyzer = () => {
   const { resumeId, jobTargetId, showNotification } = useAppContext()
   const [analysis, setAnalysis] = useState(null)
   const [atsResult, setAtsResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+  const [copiedIdx, setCopiedIdx] = useState(null)
 
   const handleAnalyze = async () => {
     if (!resumeId || !jobTargetId) {
-      showNotification('Please upload resume and set target job first', 'error')
+      showNotification('Please upload your resume and configure target job first', 'error')
       return
     }
 
@@ -26,7 +28,7 @@ const ResumeAnalyzer = () => {
       ])
       setAnalysis(analysisData)
       setAtsResult(atsData)
-      showNotification('Analysis complete!', 'success')
+      showNotification('Resume analysis & ATS audit complete!', 'success')
     } catch (error) {
       showNotification(
         error.response?.data?.detail || 'Analysis failed',
@@ -43,161 +45,202 @@ const ResumeAnalyzer = () => {
       return
     }
 
-    setLoading(true)
+    setDownloading(true)
     try {
       const result = await rewriteResume(resumeId, jobTargetId)
       const link = document.createElement('a')
       link.href = result.pdf_url
       link.download = 'optimized-resume.pdf'
       link.click()
-      showNotification('Resume downloaded!', 'success')
+      showNotification('Optimized Resume downloaded!', 'success')
     } catch (error) {
       showNotification(
         error.response?.data?.detail || 'Download failed',
         'error'
       )
     } finally {
-      setLoading(false)
+      setDownloading(false)
     }
   }
 
+  const handleCopyBullet = (text, index) => {
+    navigator.clipboard.writeText(text)
+    setCopiedIdx(index)
+    setTimeout(() => setCopiedIdx(null), 2000)
+    showNotification('Bullet point copied to clipboard!', 'info')
+  }
+
   return (
-    <div className="p-8 space-y-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Resume Analyzer</h1>
-            <p className="text-slate-400">
-              Get detailed insights on how your resume matches the target job
-            </p>
+    <div className="p-8 max-w-7xl mx-auto space-y-8 select-none">
+      
+      {/* Module Title Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+        <div>
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              Module 01
+            </span>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Resume Match & ATS Auditor</h1>
           </div>
-          <motion.button
-            onClick={handleAnalyze}
-            disabled={loading || !resumeId || !jobTargetId}
-            className="px-6 py-3 bg-accent hover:bg-blue-600 text-primary font-bold rounded-lg transition-all flex items-center gap-2 disabled:opacity-50"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Sparkles size={20} />
-            {loading ? 'Analyzing...' : 'Analyze Now'}
-          </motion.button>
+          <p className="text-sm text-slate-400">
+            Instant Gemini AI comparison against your target job requirements & Applicant Tracking Systems.
+          </p>
         </div>
 
-        {analysis ? (
-          <div className="space-y-8">
-            {/* Scores Section */}
-            <div className="grid grid-cols-2 gap-8">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-secondary rounded-xl p-8"
-              >
-                <h3 className="text-lg font-semibold mb-6 text-slate-200">
-                  Match Score
-                </h3>
-                <ScoreGauge score={analysis.match_score} max={100} />
-              </motion.div>
+        <motion.button
+          onClick={handleAnalyze}
+          disabled={loading || !resumeId || !jobTargetId}
+          className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2.5 transition-all disabled:opacity-50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Sparkles size={18} className={loading ? 'animate-spin' : ''} />
+          <span>{loading ? 'Analyzing with Gemini...' : 'Analyze Resume'}</span>
+        </motion.button>
+      </div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-secondary rounded-xl p-8"
-              >
-                <h3 className="text-lg font-semibold mb-6 text-slate-200">
-                  ATS Score
-                </h3>
-                <ScoreGauge score={atsResult?.ats_score || 0} max={100} />
-              </motion.div>
+      {analysis ? (
+        <AnimatePresence>
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-8"
+          >
+            
+            {/* Score Gauges */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col items-center justify-center">
+                <ScoreGauge score={analysis.match_score} max={100} label="Job Match Score" />
+              </div>
+              <div className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col items-center justify-center">
+                <ScoreGauge score={atsResult?.ats_score || 0} max={100} label="ATS Compliance Score" />
+              </div>
             </div>
 
-            {/* Skills Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-secondary rounded-xl p-8"
-            >
-              <h3 className="text-lg font-semibold mb-4 text-green-400">
-                ✓ Matching Skills ({analysis.matching_skills?.length || 0})
-              </h3>
-              <div className="flex flex-wrap gap-3 mb-6">
-                {analysis.matching_skills?.map((skill, i) => (
-                  <SkillChip key={i} skill={skill} type="matching" />
-                ))}
+            {/* Matching & Missing Skills Matrix */}
+            <div className="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle size={18} className="text-emerald-400" />
+                  <h3 className="text-base font-bold text-emerald-300">
+                    Matching Skills Found ({analysis.matching_skills?.length || 0})
+                  </h3>
+                </div>
+                <div className="flex flex-wrap gap-2.5">
+                  {analysis.matching_skills?.length > 0 ? (
+                    analysis.matching_skills.map((skill, i) => (
+                      <SkillChip key={i} skill={skill} type="matching" />
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-500 italic">No direct matching skills detected.</p>
+                  )}
+                </div>
               </div>
 
-              <h3 className="text-lg font-semibold mb-4 text-red-400">
-                ✗ Missing Skills ({analysis.missing_skills?.length || 0})
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {analysis.missing_skills?.map((skill, i) => (
-                  <SkillChip key={i} skill={skill} type="missing" />
-                ))}
+              <div className="pt-4 border-t border-slate-800/80">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertCircle size={18} className="text-rose-400" />
+                  <h3 className="text-base font-bold text-rose-300">
+                    Missing Required Skills ({analysis.missing_skills?.length || 0})
+                  </h3>
+                </div>
+                <div className="flex flex-wrap gap-2.5">
+                  {analysis.missing_skills?.length > 0 ? (
+                    analysis.missing_skills.map((skill, i) => (
+                      <SkillChip key={i} skill={skill} type="missing" />
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-500 italic">All required job skills are covered!</p>
+                  )}
+                </div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Improved Bullets */}
-            {analysis.improved_bullets && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-secondary rounded-xl p-8"
-              >
-                <h3 className="text-lg font-semibold mb-4 text-accent">
-                  📝 Suggested Bullet Points
-                </h3>
-                <ul className="space-y-3">
-                  {analysis.improved_bullets?.map((bullet, i) => (
-                    <li
+            {/* AI Tailored Bullet Rewrites */}
+            {analysis.improved_bullets?.length > 0 && (
+              <div className="glass-panel rounded-2xl p-6 md:p-8 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles size={20} className="text-indigo-400" />
+                    <h3 className="text-lg font-bold text-white">AI-Rewritten Impact Bullets</h3>
+                  </div>
+                  <span className="text-xs text-slate-400">Optimized for ATS keyphrases</span>
+                </div>
+
+                <div className="space-y-3">
+                  {analysis.improved_bullets.map((bullet, i) => (
+                    <motion.div
                       key={i}
-                      className="flex gap-3 text-slate-200 bg-primary rounded p-4"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="group flex items-start justify-between gap-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/30 transition-all"
                     >
-                      <span className="text-accent font-bold">•</span>
-                      <span>{bullet}</span>
-                    </li>
+                      <div className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-400 font-bold text-xs flex-shrink-0 mt-0.5">
+                          {i + 1}
+                        </span>
+                        <p className="text-sm text-slate-200 leading-relaxed">{bullet}</p>
+                      </div>
+
+                      <button
+                        onClick={() => handleCopyBullet(bullet, i)}
+                        className="p-2 rounded-lg bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors flex-shrink-0"
+                        title="Copy to clipboard"
+                      >
+                        {copiedIdx === i ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                      </button>
+                    </motion.div>
                   ))}
-                </ul>
-              </motion.div>
+                </div>
+              </div>
             )}
 
-            {/* ATS Issues */}
+            {/* ATS Compliance Checklist */}
             {atsResult?.ats_issues?.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-secondary rounded-xl p-8 border-l-4 border-red-500"
-              >
-                <h3 className="text-lg font-semibold mb-4 text-red-400">
-                  ⚠️ ATS Issues
-                </h3>
-                <ul className="space-y-2">
-                  {atsResult.ats_issues?.map((issue, i) => (
-                    <li key={i} className="text-slate-300">
-                      • {issue}
+              <div className="glass-panel rounded-2xl p-6 md:p-8 border-l-4 border-amber-500 space-y-3">
+                <div className="flex items-center gap-2 text-amber-400 font-bold">
+                  <FileCheck size={20} />
+                  <h3>ATS Format & Parser Warnings</h3>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-300">
+                  {atsResult.ats_issues.map((issue, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      <span>{issue}</span>
                     </li>
                   ))}
                 </ul>
-              </motion.div>
+              </div>
             )}
 
-            {/* Download Button */}
+            {/* Action Bar */}
             <motion.button
               onClick={handleDownloadResume}
-              disabled={loading}
-              className="w-full px-6 py-4 bg-accent hover:bg-blue-600 text-primary font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              disabled={downloading}
+              className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3 transition-all disabled:opacity-50"
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
             >
               <Download size={20} />
-              Download Optimized Resume PDF
+              <span>{downloading ? 'Generating PDF...' : 'Download Tailored Resume PDF'}</span>
             </motion.button>
+
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        /* Empty State */
+        <div className="glass-panel rounded-3xl p-12 text-center space-y-4 max-w-xl mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
+            <Sparkles size={32} />
           </div>
-        ) : (
-          <div className="text-center py-16 text-slate-400">
-            <Sparkles size={48} className="mx-auto mb-4 opacity-50" />
-            <p>Click "Analyze Now" to start your resume analysis</p>
-          </div>
-        )}
-      </div>
+          <h3 className="text-lg font-bold text-white">Ready for AI Analysis</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Upload your resume and select a target job above, then click <strong>"Analyze Resume"</strong> to run instant Gemini 3.6 Flash comparison.
+          </p>
+        </div>
+      )}
+
     </div>
   )
 }
