@@ -1,40 +1,71 @@
 import os
 import json
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 def call_gemini(prompt: str) -> str:
-    key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not key:
-        raise Exception("Invalid API key. Please set GEMINI_API_KEY in backend/.env")
+    key = os.getenv("GEMINI_API_KEY", "").strip() or os.getenv("GCP_API_KEY", "").strip()
+    if not key or key.startswith("your_"):
+        raise Exception("Invalid API key. Please set GEMINI_API_KEY in environment variables.")
     
-    from google import genai
-    client = genai.Client(api_key=key)
-    
-    models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
+    # 1. Try google-genai SDK first
+    try:
+        from google import genai
+        client = genai.Client(api_key=key)
+        models = ["gemini-1.5-flash", "gemini-2.0-flash-exp", "gemini-1.5-pro"]
+        for model_name in models:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                if response and hasattr(response, "text") and response.text:
+                    return response.text
+            except Exception:
+                continue
+    except Exception as sdk_err:
+        print(f"[Gemini SDK Note] {sdk_err}, using direct HTTP REST API...")
+
+    # 2. Direct HTTP REST API fallback to Gemini API (100% dependency-free using requests)
+    models = ["gemini-1.5-flash", "gemini-2.0-flash-exp", "gemini-1.5-pro"]
     last_err = None
     
-    for model_name in models:
+    for model in models:
         try:
-            interaction = client.interactions.create(
-                model=model_name,
-                input=prompt
-            )
-            if interaction and hasattr(interaction, "output_text") and interaction.output_text:
-                return interaction.output_text
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+            payload = {
+                "contents": [
+                    {
+                        "parts": [
+                            {"text": prompt}
+                        ]
+                    }
+                ]
+            }
+            res = requests.post(url, json=payload, timeout=30)
+            if res.status_code == 200:
+                data = res.json()
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        text_out = parts[0].get("text", "")
+                        if text_out.strip():
+                            return text_out
+            else:
+                last_err = f"HTTP {res.status_code}: {res.text[:200]}"
         except Exception as e:
-            last_err = e
-            err_str = str(e)
-            if "400" in err_str or "INVALID_ARGUMENT" in err_str or "API key not valid" in err_str:
-                raise Exception("Invalid API key. Please set a valid GEMINI_API_KEY in backend/.env")
+            last_err = str(e)
             continue
             
     if last_err:
         err_msg = str(last_err)
         if "quota" in err_msg.lower() or "429" in err_msg or "rate limit" in err_msg.lower():
-            raise Exception("Gemini API rate limit reached (20 reqs/min). Please wait a few seconds and try again.")
+            raise Exception("Gemini API rate limit reached. Please wait a few seconds and try again.")
         raise Exception(f"Gemini API Error: {err_msg}")
+        
     raise Exception("Empty response received from Gemini API")
 
 def clean_json_response(text: str) -> str:
