@@ -1,6 +1,17 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8000'
+// Dynamic API Base URL detection:
+// 1. Uses VITE_API_BASE_URL if explicitly provided in Vercel Environment Variables
+// 2. In production mode (Vercel deployment), defaults to relative path '' so requests go to Vercel Serverless Function api/index.py
+// 3. In local development mode, defaults to http://127.0.0.1:8000
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+  return import.meta.env.MODE === 'production' ? '' : 'http://127.0.0.1:8000'
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 const api = axios.create({
   baseURL: API_BASE_URL,

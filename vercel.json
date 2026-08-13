@@ -15,8 +15,15 @@
   ],
   "routes": [
     {
+      "src": "/(resume|job-target|analyze|ats-check|interview|skill-gap|study-plan|health)(.*)",
+      "dest": "api/index.py"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "api/index.py"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
