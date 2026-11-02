@@ -1,9 +1,17 @@
 import os
 import json
+from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
+
+GEMINI_MODELS = [
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash",
+]
 
 def call_gemini(prompt: str) -> str:
     key = os.getenv("GEMINI_API_KEY", "").strip() or os.getenv("GCP_API_KEY", "").strip()
@@ -14,8 +22,7 @@ def call_gemini(prompt: str) -> str:
     try:
         from google import genai
         client = genai.Client(api_key=key)
-        models = ["gemini-1.5-flash", "gemini-2.0-flash-exp", "gemini-1.5-pro"]
-        for model_name in models:
+        for model_name in GEMINI_MODELS:
             try:
                 response = client.models.generate_content(
                     model=model_name,
@@ -29,36 +36,36 @@ def call_gemini(prompt: str) -> str:
         print(f"[Gemini SDK Note] {sdk_err}, using direct HTTP REST API...")
 
     # 2. Direct HTTP REST API fallback to Gemini API (100% dependency-free using requests)
-    models = ["gemini-1.5-flash", "gemini-2.0-flash-exp", "gemini-1.5-pro"]
     last_err = None
     
-    for model in models:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
-            payload = {
-                "contents": [
-                    {
-                        "parts": [
-                            {"text": prompt}
-                        ]
-                    }
-                ]
-            }
-            res = requests.post(url, json=payload, timeout=30)
-            if res.status_code == 200:
-                data = res.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    if parts:
-                        text_out = parts[0].get("text", "")
-                        if text_out.strip():
-                            return text_out
-            else:
-                last_err = f"HTTP {res.status_code}: {res.text[:200]}"
-        except Exception as e:
-            last_err = str(e)
-            continue
+    for model in GEMINI_MODELS:
+        for api_version in ["v1beta", "v1"]:
+            try:
+                url = f"https://generativelanguage.googleapis.com/{api_version}/models/{model}:generateContent?key={key}"
+                payload = {
+                    "contents": [
+                        {
+                            "parts": [
+                                {"text": prompt}
+                            ]
+                        }
+                    ]
+                }
+                res = requests.post(url, json=payload, timeout=30)
+                if res.status_code == 200:
+                    data = res.json()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        if parts:
+                            text_out = parts[0].get("text", "")
+                            if text_out.strip():
+                                return text_out
+                else:
+                    last_err = f"HTTP {res.status_code}: {res.text[:200]}"
+            except Exception as e:
+                last_err = str(e)
+                continue
             
     if last_err:
         err_msg = str(last_err)
