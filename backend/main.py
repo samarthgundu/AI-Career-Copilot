@@ -35,11 +35,11 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(resume_routes.router, tags=["Resume"])
-app.include_router(job_routes.router, tags=["Job Target"])
-app.include_router(analysis_routes.router, tags=["Analysis"])
-app.include_router(interview_routes.router, tags=["Interview"])
-app.include_router(skill_routes.router, tags=["Skills"])
+app.include_router(resume_routes.router, prefix="/api", tags=["Resume"])
+app.include_router(job_routes.router, prefix="/api", tags=["Job Target"])
+app.include_router(analysis_routes.router, prefix="/api", tags=["Analysis"])
+app.include_router(interview_routes.router, prefix="/api", tags=["Interview"])
+app.include_router(skill_routes.router, prefix="/api", tags=["Skills"])
 
 @app.get("/")
 async def root():
@@ -47,19 +47,19 @@ async def root():
         "message": "AI Career Copilot API",
         "status": "running",
         "endpoints": [
-            "/resume/upload",
-            "/job-target",
-            "/analyze",
-            "/ats-check",
-            "/resume/rewrite",
-            "/interview/start",
-            "/interview/chat",
-            "/skill-gap",
-            "/study-plan"
+            "/api/resume/upload",
+            "/api/job-target",
+            "/api/analyze",
+            "/api/ats-check",
+            "/api/resume/rewrite",
+            "/api/interview/start",
+            "/api/interview/chat",
+            "/api/skill-gap",
+            "/api/study-plan"
         ]
     }
 
-@app.get("/health")
+@app.get("/api/health")
 async def health():
     return {"status": "ok"}
 
